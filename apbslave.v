@@ -66,6 +66,7 @@ module apbslave# (
 	reg [Elements_Num-1:0] flags_reg;
  	wire start_bit_i;
 	wire [BW - 1:0] result_mat [Elements_Num-1:0];
+	wire [OP_ADDR_WIDTH-1:0] op_addr;
 
 	reg [BW-1:0] data_in_op_a;
 	reg [BW-1:0] data_in_op_b;
@@ -76,6 +77,7 @@ module apbslave# (
 	reg [BW-1:0] sp_data_in;
 	reg [SP_ADDR_WIDTH-1:0] sp_addr;
 	wire [BW*Elements_Num-1:0] sp_op;
+	wire unused; // Declare the wire
 	wire [BW-1:0] sp_data_o;
 	reg op_en_a_i;
 	reg op_en_b_i;
@@ -88,15 +90,12 @@ module apbslave# (
 	assign control_reg_o = control_reg; 
 	assign operand_A_o = op_a_mat_sig;
 	assign operand_B_o = op_b_mat_sig;
-	
+	assign unused = 1'b0; // Assign a default value to the wire
 	integer count_w;
 	integer i;
 
 generate
     if(MAX_DIM < MAX_MAX_DIM) begin: GEN_LABEL
-        wire unused; // Declare the wire
-        assign unused = 1'b0; // Assign a default value to the wire
-
         // Instantiate operand_a and operand_b with the unused wire connected to addr
         reg_file_op #(.DW(DW), .MAX_DIM(MAX_DIM)) operand_a (
             .clk_i(clk_i), 
