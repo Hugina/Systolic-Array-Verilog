@@ -40,5 +40,3 @@ The evaluation focused on RTL code quality, comprehensive documentation, and the
 This project represents a significant step towards optimizing matrix multiplication processes by reducing the reliance on CPU architecture limitations. By designing a specialized hardware accelerator, we demonstrated an innovative approach to achieving faster and more efficient matrix calculations, crucial for the computational demands of modern machine learning applications.
 
 --- 
-
-Feel free to adjust this README to better match your project's specifics or add any additional sections that you think might be relevant.
