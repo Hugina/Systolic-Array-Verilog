@@ -162,7 +162,7 @@ endgenerate
 	always @(negedge reset_ni or posedge clk_i) begin : FSM
 		if (!reset_ni) begin
 			current_state <= STATE_IDLE;
-			prdata_o <= 1'b0;
+			prdata_o <= 32'b0;
 			pready_o <= 1'b0;
 			pslverr_o <= 1'b0;
 			result_reg <= 0;
@@ -179,7 +179,7 @@ endgenerate
         			op_en_a_i <= 1'b0;
 					op_en_b_i <= 1'b0;
 					op_en_sp_i<= 1'b0;	
-					prdata_o  <= 1'b0;
+					prdata_o  <= 32'b0;;
 					pready_o  <= 1'b0;
 					pslverr_o <= 1'b0;
 					
@@ -268,7 +268,11 @@ endgenerate
 					if (done_i) begin // Checks if we are done.
 						if (count_w < Elements_Num) begin
 							op_en_sp_i <= 1'b1;
-							sp_addr <= count_w;
+							 if (SP_ADDR_WIDTH == 4) begin
+								sp_addr <= count_w[3:0];  // Select 4 least significant bits
+							end else if (SP_ADDR_WIDTH == 2) begin
+								sp_addr <= count_w[1:0];  // Select 2 least significant bits
+							end
 						    sp_data_in <= result_reg[BW-1:0]; // Uses the lowest part of the result.
                             result_reg <= result_reg >> BW; // Prepares the next part of the result.
                             count_w <= count_w + 1;
