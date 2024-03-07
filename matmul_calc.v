@@ -34,7 +34,18 @@ module matmul_calc #(
     wire [DW-1:0] cell_b [Elements_Num-1:0]; //  values for matrix B elements.
     wire [Elements_Num-1:0] of_pes; // Flags indicating overflows from PEs.
     wire [Elements_Num-1:0] of_mat_c; // Flags for overflows when adding values from C
+    wire [DW-1:0] Unused_cells_a [3:0]; // Unused cells in the last column of matrix A.
+    wire [DW-1:0] Unused_cells_b [3:0]; // Unused cells in the last row of matrix B.
     assign out_of_mat = of_pes | of_mat_c; // Combine overflow flags from all sources.
+
+    genvar l;
+    generate
+        for (l = 0; l < 4; l=l+1) begin
+            assign Unused_cells_a[l] = cell_a[15 - 4*l];
+            assign Unused_cells_b[l] = cell_b[15 - 4*l];
+        end
+    endgenerate
+
 
     // Calculating inputs for each PE:
     wire [DW-1:0] pe_input_a [Elements_Num-1:0];

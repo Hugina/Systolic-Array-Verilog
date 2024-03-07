@@ -50,17 +50,13 @@ module apbslave# (
 	output reg  [BW-1:0] prdata_o, // Data output.
 	output reg  busy_o // Tells us if it's busy.
 );
-    
+    parameter STATE_IDLE = 2'b00, STATE_WRITE = 2'b01, STATE_READ = 2'b10, STATE_OPERATING = 2'b11; //pragma enum_current_state
 	localparam SP_ADDR_WIDTH = MAX_DIM > 2 ? 4 : 2; 
 	localparam OP_ADDR_WIDTH = MAX_DIM > 2 ? 2 : 1; 
 
    
 
 	reg [1:0] current_state;
-	reg [1:0] STATE_IDLE;
-	reg [1:0] STATE_WRITE;
-	reg [1:0] STATE_READ;
-	reg [1:0] STATE_OPERATING;
 	reg [BW*Elements_Num-1:0] result_reg;
 	reg [15:0] control_reg;
 	reg [Elements_Num-1:0] flags_reg;
@@ -166,10 +162,6 @@ endgenerate
 			pready_o <= 1'b0;
 			pslverr_o <= 1'b0;
 			result_reg <= 0;
-			STATE_IDLE <= 2'b00;
-        	STATE_WRITE <= 2'b01;
-        	STATE_READ <= 2'b10;
-        	STATE_OPERATING <= 2'b11;
 
   		  
 		end	
@@ -179,7 +171,7 @@ endgenerate
         			op_en_a_i <= 1'b0;
 					op_en_b_i <= 1'b0;
 					op_en_sp_i<= 1'b0;	
-					prdata_o  <= 32'b0;;
+					prdata_o  <= 32'b0;
 					pready_o  <= 1'b0;
 					pslverr_o <= 1'b0;
 					
