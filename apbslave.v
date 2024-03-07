@@ -266,7 +266,7 @@ endgenerate
 					result_reg <= result_i; // Stores the result.
 					
 					if (done_i) begin // Checks if we are done.
-						if (count_w < Elements_Num) begin
+						if (count_w < {20'b0, Elements_Num}) begin
 							op_en_sp_i <= 1'b1;
 							 if (SP_ADDR_WIDTH == 4) begin
 								sp_addr <= count_w[3:0];  // Select 4 least significant bits
