@@ -22,7 +22,7 @@ module scrachpad #(
 	output reg [BW - 1:0] row_sp_o// Output of a specific row based on address
 );
 	
-	reg  [BW - 1:0] mem [Elements_Num*SPN - 1:0];// Memory storage for matrices
+	reg [BW - 1:0] mem [(Elements_Num*SPN)*3 - 1:0]; // Memory storage for matrices// Memory storage for matrices
 	wire [BW*Elements_Num - 1:0] flat_mat_sp [SPN - 1:0];
 	genvar i,j;	
 	integer q;
@@ -46,7 +46,7 @@ module scrachpad #(
             end        
             else begin 
           				if(ena_i) begin// Write data to the selected address and section.
-          				  mem[i*Elements_Num + addr] <= element_w_sel == i ? data_i: mem[i*Elements_Num + addr];
+          				  mem[i*Elements_Num + addr] <= {30'b0, element_w_sel} == i ? data_i: mem[i*Elements_Num + addr];
           				end
             end
      			 end
