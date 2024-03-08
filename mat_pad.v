@@ -38,8 +38,6 @@ module mat_pad (clk_i,reset_ni,start_bit_i,mat_A,mat_B,mat_c_in,N_i,K_i,M_i,vec_
     reg  [(Elements_Num*DW)-1:0] shifted_mat_A;
     reg  [(Elements_Num*DW)-1:0] shifted_mat_B;
     wire [(Elements_Num*DW)-1:0] mat_B_T;
-    reg [DW-1:0] temp_a [MAX_DIM-1:0];
-    reg [DW-1:0] temp_b [MAX_DIM-1:0];
     reg [1:0] current_state;
     reg [2:0] N,K,M;
 
@@ -64,15 +62,11 @@ module mat_pad (clk_i,reset_ni,start_bit_i,mat_A,mat_B,mat_c_in,N_i,K_i,M_i,vec_
             done_sig_o <= 0;
             current_state <= STATE_START;
             cycle_count <= 0;
-             // Resetting temporary storage for A and B
-            for (i = 0; i < MAX_DIM; i = i + 1) begin
-                temp_a[i] <= 0;
-                temp_b[i] <= 0;
-            end
+
             N <= 0;
             K <= 0;
-            M <= 0;
-        end 
+            M <= 0; 
+          end
         else begin
           // Operating based on the current state
             case (current_state)
@@ -97,7 +91,7 @@ module mat_pad (clk_i,reset_ni,start_bit_i,mat_A,mat_B,mat_c_in,N_i,K_i,M_i,vec_
                  We move bits around to make sure they line up just right
                 Depending on how big N and M are, we do things a bit differently*/
                 
-                    if (cycle_count < (2*MAX_DIM)) begin      
+                   if (cycle_count < {25'b0, 2*MAX_DIM}) begin     
                               case(N)
                               1: begin
                                   for (i = 0; i < 1; i = i + 1)
@@ -156,7 +150,7 @@ module mat_pad (clk_i,reset_ni,start_bit_i,mat_A,mat_B,mat_c_in,N_i,K_i,M_i,vec_
                           case(M)
                               1: begin
                                   for (j = 0; j < 1; j = j + 1) begin   
-                                      if ((j <= cycle_count) && (cycle_count-j<K)) begin
+                                      if ((j <= cycle_count) && (cycle_count-j < {30'b0,K})) begin
                                           vec_b_o[(j+1)*DW-1 -: DW] <= shifted_mat_B[((MAX_DIM-1)*j+1)*DW-1 -: DW];
                                       end else begin
                                           vec_b_o[(j+1)*DW-1 -: DW] <= 0;
@@ -166,7 +160,7 @@ module mat_pad (clk_i,reset_ni,start_bit_i,mat_A,mat_B,mat_c_in,N_i,K_i,M_i,vec_
                               end
                               2: begin
                                   for (j = 0; j < 2; j = j + 1) begin   
-                                      if ((j <= cycle_count) && (cycle_count-j<K)) begin
+                                      if ((j <= cycle_count) && (cycle_count-j< {30'b0,K})) begin
                                           vec_b_o[(j+1)*DW-1 -: DW] <= shifted_mat_B[((MAX_DIM-1)*j+1)*DW-1 -: DW];
                                       end else begin
                                           vec_b_o[(j+1)*DW-1 -: DW] <= 0;
@@ -175,7 +169,7 @@ module mat_pad (clk_i,reset_ni,start_bit_i,mat_A,mat_B,mat_c_in,N_i,K_i,M_i,vec_
                               end
                               3: begin
                                   for (j = 0; j < 3; j = j + 1) begin   
-                                      if ((j <= cycle_count) && (cycle_count-j<K)) begin
+                                      if ((j <= cycle_count) && (cycle_count-j<{30'b0,K})) begin
                                           vec_b_o[(j+1)*DW-1 -: DW] <= shifted_mat_B[((MAX_DIM-1)*j+1)*DW-1 -: DW];
                                       end else begin
                                           vec_b_o[(j+1)*DW-1 -: DW] <= 0;
@@ -184,7 +178,7 @@ module mat_pad (clk_i,reset_ni,start_bit_i,mat_A,mat_B,mat_c_in,N_i,K_i,M_i,vec_
                               end
                               4: begin
                                   for (j = 0; j < 4; j = j + 1) begin   
-                                      if ((j <= cycle_count) && (cycle_count-j<K)) begin
+                                      if ((j <= cycle_count) && (cycle_count-j<{30'b0,K})) begin
                                           vec_b_o[(j+1)*DW-1 -: DW] <= shifted_mat_B[((MAX_DIM-1)*j+1)*DW-1 -: DW];
                                       end else begin
                                           vec_b_o[(j+1)*DW-1 -: DW] <= 0;
@@ -200,7 +194,7 @@ module mat_pad (clk_i,reset_ni,start_bit_i,mat_A,mat_B,mat_c_in,N_i,K_i,M_i,vec_
                         shifted_mat_A <= shifted_mat_A >> DW;
                         shifted_mat_B <= shifted_mat_B >> DW; 
                     end           
-                    else if(cycle_count >= (2*MAX_DIM) && cycle_count < (3*MAX_DIM)) begin
+                    else if(cycle_count >= {25'b0,(2*MAX_DIM)} && cycle_count < {24'b0,(3*MAX_DIM)}) begin
                         vec_a_o <= 0;
                         vec_b_o <= 0;                      
                     end
@@ -233,7 +227,7 @@ module mat_pad (clk_i,reset_ni,start_bit_i,mat_A,mat_B,mat_c_in,N_i,K_i,M_i,vec_
             // Additional logic for handling matrix C output
             for (i = 0; i < MAX_DIM; i = i + 1) begin
                 for (j = 0; j < MAX_DIM; j = j + 1) begin
-                    if (i < N && j < M) begin
+                    if (i < {29'b0,N} && j < {29'b0,M}) begin
                         // Keep elements within MxN boundaries
                         c_flat_out[(i*MAX_DIM+j + 1)*BW-1 -: BW] <= mat_c_in[(i*MAX_DIM+j + 1)*BW-1 -: BW];
                     end else begin
